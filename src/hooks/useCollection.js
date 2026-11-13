@@ -12,5 +12,5 @@ export function useCollection(storageKey, seed = []) {
 
   const remove = (id) => setItems((list) => list.filter((item) => item.id !== id));
 
-  return { items, add, update, remove };
+  return { items, add, update, remove, replace: setItems };
 }

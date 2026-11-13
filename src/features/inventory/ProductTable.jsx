@@ -1,4 +1,4 @@
-import { AlertTriangle, Pencil, Trash2 } from "lucide-react";
+import { AlertTriangle, Pencil, ShoppingCart, Trash2 } from "lucide-react";
 import { isLowStock } from "../../utils/calculations";
 import { formatNumber, formatTL } from "../../utils/format";
 import Badge from "../../components/ui/Badge";
@@ -20,7 +20,7 @@ function StockCell({ stock, low }) {
   );
 }
 
-export default function ProductTable({ products, onEdit, onDelete }) {
+export default function ProductTable({ products, onEdit, onDelete, onSell }) {
   return (
     <div className={tableWrapper}>
       <table className="w-full min-w-[760px] text-sm">
@@ -33,18 +33,27 @@ export default function ProductTable({ products, onEdit, onDelete }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+        <tbody className="divide-y divide-stone-200/80 dark:divide-stone-700/80">
           {products.map((product) => (
-            <tr key={product.id} className="hover:bg-stone-50 dark:hover:bg-stone-800/50">
+            <tr key={product.id} className="hover:bg-white/50 dark:hover:bg-stone-800/50">
               <td className="px-4 py-3 font-medium">{product.name}</td>
-              <td className="px-4 py-3 text-stone-600 dark:text-stone-400">{product.category}</td>
-              <td className="px-4 py-3 text-stone-600 dark:text-stone-400">{product.size || "-"}</td>
+              <td className="px-4 py-3 text-stone-700 dark:text-stone-300">{product.category}</td>
+              <td className="px-4 py-3 text-stone-700 dark:text-stone-300">{product.size || "-"}</td>
               <td className="px-4 py-3 text-right tabular-nums">
                 <StockCell stock={product.stock} low={isLowStock(product)} />
               </td>
               <td className="px-4 py-3 text-right tabular-nums">{formatTL(product.cost)}</td>
               <td className="px-4 py-3 text-right tabular-nums">{formatTL(product.price)}</td>
               <td className="whitespace-nowrap px-2 py-2 text-right">
+                <button
+                  className={`${iconButton} disabled:cursor-not-allowed disabled:opacity-40`}
+                  onClick={() => onSell(product)}
+                  aria-label="Satış kaydı"
+                  title="Satış kaydı"
+                  disabled={product.stock <= 0}
+                >
+                  <ShoppingCart size={16} />
+                </button>
                 <button className={iconButton} onClick={() => onEdit(product)} aria-label="Düzenle">
                   <Pencil size={16} />
                 </button>

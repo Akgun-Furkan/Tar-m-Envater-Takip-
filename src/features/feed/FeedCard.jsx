@@ -1,4 +1,4 @@
-import { AlertTriangle, Pencil, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Minus, Pencil, Plus, Trash2 } from "lucide-react";
 import { daysRemaining, feedStockPercent, isFeedCritical } from "../../utils/calculations";
 import { formatDate, formatNumber, formatTL } from "../../utils/format";
 import Badge from "../../components/ui/Badge";
@@ -13,7 +13,7 @@ function Detail({ label, value }) {
   );
 }
 
-export default function FeedCard({ feed, onAddStock, onEdit, onDelete }) {
+export default function FeedCard({ feed, onAddStock, onUse, onEdit, onDelete }) {
   const critical = isFeedCritical(feed);
   const days = daysRemaining(feed);
   const borderColor = critical
@@ -21,7 +21,7 @@ export default function FeedCard({ feed, onAddStock, onEdit, onDelete }) {
     : "border-stone-200 dark:border-stone-800";
 
   return (
-    <div className={`rounded-lg border bg-white p-4 dark:bg-stone-900 ${borderColor}`}>
+    <div className={`rounded-lg border bg-white/85 p-4 shadow-sm backdrop-blur-md dark:bg-stone-900/85 ${borderColor}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="font-semibold">{feed.name}</h3>
@@ -53,6 +53,14 @@ export default function FeedCard({ feed, onAddStock, onEdit, onDelete }) {
       <div className="mt-3 flex items-center gap-1 border-t border-stone-100 pt-3 dark:border-stone-800">
         <button className={`${buttonGhost} !px-3 !py-1.5 !text-xs`} onClick={() => onAddStock(feed)}>
           <Plus size={14} /> Stok ekle
+        </button>
+        <button
+          className={`${buttonGhost} !px-3 !py-1.5 !text-xs disabled:cursor-not-allowed disabled:opacity-40`}
+          onClick={() => onUse(feed)}
+          disabled={feed.stock <= 0}
+          title={feed.stock <= 0 ? "Kullanılabilir stok yok" : "Kullanım miktarı gir"}
+        >
+          <Minus size={14} /> Kullanım ekle
         </button>
         <span className="flex-1" />
         <button className={iconButton} onClick={() => onEdit(feed)} aria-label="Düzenle">

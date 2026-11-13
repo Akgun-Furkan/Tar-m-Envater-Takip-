@@ -13,7 +13,9 @@ import CompanyTab from "./features/company/CompanyTab";
 export default function App() {
   const products = useCollection(STORAGE_KEYS.products, SEED_PRODUCTS);
   const feeds = useCollection(STORAGE_KEYS.feeds, SEED_FEEDS);
+  const feedUsages = useCollection(STORAGE_KEYS.feedUsages);
   const company = useCollection(STORAGE_KEYS.company);
+  const sales = useCollection(STORAGE_KEYS.sales);
   const [activeTab, setActiveTab] = useLocalStorage(STORAGE_KEYS.tab, TAB_IDS.inventory);
   const [query, setQuery] = useState("");
 
@@ -24,23 +26,35 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100">
-      <Header
-        query={query}
-        onQueryChange={setQuery}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        alerts={alerts}
-      />
+    <div
+      className="relative min-h-screen text-stone-900 dark:text-stone-100"
+      style={{
+        backgroundImage: "url('/aronya-background.jpg')",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="pointer-events-none fixed inset-0 z-0 bg-white/25 dark:bg-stone-950/35" />
+      <div className="relative z-10">
+        <Header
+          query={query}
+          onQueryChange={setQuery}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          alerts={alerts}
+          collections={{ products, feeds, feedUsages, company, sales }}
+        />
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
-        {activeTab === TAB_IDS.inventory && <InventoryTab products={products} query={query} />}
-        {activeTab === TAB_IDS.finance && (
-          <FinanceTab products={products} feeds={feeds} company={company} query={query} />
-        )}
-        {activeTab === TAB_IDS.feed && <FeedTab feeds={feeds} query={query} />}
-        {activeTab === TAB_IDS.company && <CompanyTab company={company} query={query} />}
-      </main>
+        <main className="mx-auto max-w-6xl px-4 py-6">
+          {activeTab === TAB_IDS.inventory && <InventoryTab products={products} sales={sales} query={query} />}
+          {activeTab === TAB_IDS.finance && (
+            <FinanceTab products={products} feeds={feeds} company={company} sales={sales} query={query} />
+          )}
+          {activeTab === TAB_IDS.feed && <FeedTab feeds={feeds} feedUsages={feedUsages} query={query} />}
+          {activeTab === TAB_IDS.company && <CompanyTab company={company} query={query} />}
+        </main>
+      </div>
     </div>
   );
 }

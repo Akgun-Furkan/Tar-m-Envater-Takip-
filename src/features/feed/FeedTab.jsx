@@ -8,11 +8,14 @@ import Modal from "../../components/ui/Modal";
 import { buttonPrimary } from "../../components/ui/styles";
 import FeedCard from "./FeedCard";
 import FeedForm from "./FeedForm";
+import FeedUsageForm from "./FeedUsageForm";
+import FeedUsageReport from "./FeedUsageReport";
 
 const NEW_FEED = "new";
 
-export default function FeedTab({ feeds, query }) {
+export default function FeedTab({ feeds, feedUsages, query }) {
   const [editing, setEditing] = useState(null); // null | NEW_FEED | yem nesnesi
+  const [usingFeed, setUsingFeed] = useState(null);
 
   const visibleFeeds = useMemo(
     () => feeds.items.filter((feed) => matchesQuery(query, feed.name)),
@@ -33,6 +36,22 @@ export default function FeedTab({ feeds, query }) {
   const handleAddStock = (feed) => {
     const amount = parseDecimal(window.prompt(`"${feed.name}" için eklenecek miktar (kg):`));
     if (amount > 0) feeds.update(feed.id, { stock: feed.stock + amount, lastAdded: todayISO() });
+  };
+
+  const handleUseFeed = (usageData) => {
+    const feed = feeds.items.find((item) => item.id === usingFeed.id);
+    if (!feed || usageData.quantity > feed.stock) {
+      return "Kullanım miktarı mevcut stoktan fazla olamaz.";
+    }
+
+    feeds.update(feed.id, { stock: feed.stock - usageData.quantity });
+    feedUsages.add({
+      ...usageData,
+      feedId: feed.id,
+      feedName: feed.name,
+    });
+    setUsingFeed(null);
+    return "";
   };
 
   return (
@@ -57,6 +76,7 @@ export default function FeedTab({ feeds, query }) {
               key={feed.id}
               feed={feed}
               onAddStock={handleAddStock}
+              onUse={setUsingFeed}
               onEdit={setEditing}
               onDelete={handleDelete}
             />
@@ -64,12 +84,23 @@ export default function FeedTab({ feeds, query }) {
         </div>
       )}
 
+      <FeedUsageReport usages={feedUsages.items} />
+
       {editing && (
         <Modal title={editing === NEW_FEED ? "Yeni yem kaydı" : "Yemi düzenle"} onClose={() => setEditing(null)}>
           <FeedForm
             initialValues={editing === NEW_FEED ? undefined : toFormValues({ ...editing, cost: editing.cost ?? 0 })}
             onSubmit={handleSave}
             onCancel={() => setEditing(null)}
+          />
+        </Modal>
+      )}
+      {usingFeed && (
+        <Modal title={`Yem kullanımı: ${usingFeed.name}`} onClose={() => setUsingFeed(null)}>
+          <FeedUsageForm
+            feed={usingFeed}
+            onSubmit={handleUseFeed}
+            onCancel={() => setUsingFeed(null)}
           />
         </Modal>
       )}

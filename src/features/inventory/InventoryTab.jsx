@@ -6,13 +6,15 @@ import EmptyState from "../../components/ui/EmptyState";
 import { buttonPrimary, inputClass } from "../../components/ui/styles";
 import ProductForm from "./ProductForm";
 import ProductTable from "./ProductTable";
+import SaleForm from "./SaleForm";
 
 const ALL_CATEGORIES = "Tümü";
 const NEW_PRODUCT = "new";
 
-export default function InventoryTab({ products, query }) {
+export default function InventoryTab({ products, sales, query }) {
   const [category, setCategory] = useState(ALL_CATEGORIES);
   const [editing, setEditing] = useState(null); // null | NEW_PRODUCT | ürün nesnesi
+  const [selling, setSelling] = useState(null);
 
   const categories = useMemo(
     () => [...new Set(products.items.map((p) => p.category))].sort(),
@@ -37,6 +39,23 @@ export default function InventoryTab({ products, query }) {
 
   const handleDelete = (product) => {
     if (window.confirm(`"${product.name}" silinsin mi?`)) products.remove(product.id);
+  };
+
+  const handleSale = (saleData) => {
+    const product = products.items.find((item) => item.id === selling.id);
+    if (!product || saleData.quantity > product.stock) {
+      window.alert("Stok değişmiş. Satış miktarı güncel stoktan fazla olamaz.");
+      setSelling(null);
+      return;
+    }
+    products.update(product.id, { stock: product.stock - saleData.quantity });
+    sales.add({
+      ...saleData,
+      productId: product.id,
+      productName: product.name,
+      unitCost: product.cost,
+    });
+    setSelling(null);
   };
 
   const emptyText = products.items.length
@@ -64,7 +83,7 @@ export default function InventoryTab({ products, query }) {
       {visibleProducts.length === 0 ? (
         <EmptyState text={emptyText} />
       ) : (
-        <ProductTable products={visibleProducts} onEdit={setEditing} onDelete={handleDelete} />
+        <ProductTable products={visibleProducts} onEdit={setEditing} onDelete={handleDelete} onSell={setSelling} />
       )}
 
       {editing && (
@@ -75,6 +94,11 @@ export default function InventoryTab({ products, query }) {
             onSubmit={handleSave}
             onCancel={() => setEditing(null)}
           />
+        </Modal>
+      )}
+      {selling && (
+        <Modal title={`Satış kaydı: ${selling.name}`} onClose={() => setSelling(null)}>
+          <SaleForm product={selling} onSubmit={handleSale} onCancel={() => setSelling(null)} />
         </Modal>
       )}
     </section>

@@ -1,10 +1,11 @@
 import { Hexagon, Search } from "lucide-react";
 import { inputClass } from "../ui/styles";
 import TabNav from "./TabNav";
+import DataActions from "./DataActions";
 
-export default function Header({ query, onQueryChange, activeTab, onTabChange, alerts }) {
+export default function Header({ query, onQueryChange, activeTab, onTabChange, alerts, collections }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/90 backdrop-blur dark:border-stone-800 dark:bg-stone-900/90">
+    <header className="sticky top-0 z-40 border-b border-stone-300/80 bg-white/85 shadow-sm backdrop-blur-md dark:border-stone-800/80 dark:bg-stone-900/85">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
         <div className="flex items-center gap-2">
           <Hexagon className="text-amber-500" fill="currentColor" size={26} />
@@ -26,6 +27,7 @@ export default function Header({ query, onQueryChange, activeTab, onTabChange, a
         </div>
       </div>
 
+      <DataActions collections={collections} />
       <TabNav activeTab={activeTab} onChange={onTabChange} alerts={alerts} />
     </header>
   );

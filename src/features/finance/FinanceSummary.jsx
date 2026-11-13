@@ -1,4 +1,4 @@
-import { Coins, Layers, Package, TrendingUp, Wallet, Building2, CircleDollarSign } from "lucide-react";
+import { Coins, Layers, Package, TrendingUp, Wallet, Building2, CircleDollarSign, ShoppingBag } from "lucide-react";
 import { formatNumber, formatTL } from "../../utils/format";
 import StatCard from "../../components/ui/StatCard";
 
@@ -7,9 +7,16 @@ export default function FinanceSummary({ totals }) {
     totals.profit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
       <StatCard icon={Layers} label="Toplam ürün çeşidi" value={formatNumber(totals.kinds)} />
       <StatCard icon={Package} label="Toplam stok adedi" value={formatNumber(totals.units)} />
+      <StatCard icon={ShoppingBag} label="Gerçekleşen satış" value={formatTL(totals.salesRevenue)} />
+      <StatCard
+        icon={TrendingUp}
+        label="Satış kârı"
+        value={formatTL(totals.salesProfit)}
+        valueClass={totals.salesProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}
+      />
       <StatCard icon={Wallet} label="Ürün stok maliyeti" value={formatTL(totals.cost)} />
       <StatCard
         icon={Wallet}

@@ -17,7 +17,8 @@ Aronya (bal ve arıcılık odaklı) işletmesi için geliştirilmiş; ürün sto
   - Ürün stok maliyeti = Σ (ürün stoğu × ürün birim maliyeti)
   - Yem maliyeti = Σ (yem stoğu (kg) × yem birim maliyeti (TL/kg)); finans ekranında eksi gösterilir
   - Potansiyel ciro = Σ (stok × satış fiyatı)
-  - Tahmini net kar = Potansiyel ciro − Ürün stok maliyeti − Yem gideri + Şirket gelirleri − Şirket giderleri
+  - Satış kârı = Σ (satış adedi × (satış anındaki birim fiyat − maliyet))
+  - Tahmini net kar = Potansiyel ciro − Ürün stok maliyeti + Satış kârı − Yem maliyeti + Şirket gelirleri − Şirket giderleri
   - Kar marjı (%) = (Satış − Maliyet) ÷ Satış × 100
 
 ### 3. Yem ve besleme takibi
@@ -26,6 +27,8 @@ Aronya (bal ve arıcılık odaklı) işletmesi için geliştirilmiş; ürün sto
 - Stok kritik seviyenin altına inince kart kırmızıya döner ve uyarı rozeti çıkar
 - "Tahmini yetecek süre" (stok ÷ günlük tüketim) otomatik hesaplanır
 - Tek tıkla stok ekleme (son eklenme tarihi otomatik güncellenir)
+- Kullanılan miktar stoktan düşülür; kullanım tarihçesi saklanır
+- Son 12 aylık kullanım grafiği ve günlük, haftalık, aylık ortalama kullanım özeti
 
 ### 4. Şirket
 - Şirketin diğer gelir ve gider kalemlerini (ör. işçilik ödemesi, kira geliri) tarih ve tutar bilgisiyle kaydetme, düzenleme ve silme
@@ -36,6 +39,13 @@ Aronya (bal ve arıcılık odaklı) işletmesi için geliştirilmiş; ürün sto
 - Üstteki arama çubuğu tüm sekmelerde anlık çalışır
 - Ürünlerde isme ve kategoriye, yemlerde ve şirket kalemlerinde isme göre filtreler
 - Türkçe karakterlere duyarlıdır (İ/ı, Ş/ş vb.)
+
+### 6. Satış, yedekleme ve raporlama
+- Envanterde ürünün satış adedi ve birim fiyatı kaydedilir; satış anındaki maliyet saklanır ve ürün stoğu otomatik azaltılır
+- Finans ekranında satış geçmişi, gerçekleşen ciro ve satış kârı gösterilir
+- Son 12 ayın satış cirosu ve satış kârı grafikleri
+- Tüm ürün, yem, şirket ve satış verileri için JSON yedekleme ve yedeği içe aktarma
+- Ürün, yem, şirket ve satış kayıtlarını CSV olarak dışa aktarma
 
 ### Genel
 - Koyu/açık tema: cihazın tema ayarını otomatik izler
@@ -136,7 +146,9 @@ Veriler tarayıcıda şu anahtarlarla tutulur:
 |---|---|
 | `aronya.products` | Ürün listesi |
 | `aronya.feeds` | Yem listesi |
+| `aronya.feedUsages` | Yem kullanım miktarları ve tarihçesi |
 | `aronya.company` | Şirket gelir ve gider kalemleri |
+| `aronya.sales` | Satış geçmişi ve satış anındaki birim maliyet/fiyat |
 | `aronya.tab` | Son açık olan sekme |
 
 > **Önemli:** Veriler yalnızca kullanılan tarayıcıda ve cihazda saklanır. Tarayıcı verilerini (site verileri/çerezler) temizlemek kayıtları siler. Farklı cihazlar arasında otomatik senkronizasyon yoktur.
@@ -156,10 +168,3 @@ localStorage.clear(); location.reload();
 | Yem varsayılan kritik seviyesi | `features/feed/FeedForm.jsx` → `emptyFeed` |
 | Örnek veriler | `data/seedData.js` |
 | Renkler ve ortak stiller | `components/ui/styles.js` |
-
-## Olası geliştirmeler
-
-- Satış kaydı (satışta stoktan otomatik düşme)
-- JSON yedekleme / içe aktarma
-- CSV dışa aktarma
-- Aylık satış ve kar grafikleri
